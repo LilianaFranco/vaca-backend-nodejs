@@ -9,4 +9,6 @@ router.get("/groups/:id", groupsService.getById);
 
 router.post("/groups", groupsService.create);
 
+router.post("/groups/:id", groupsService.deleteById);
+
 export default router;

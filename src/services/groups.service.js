@@ -28,4 +28,18 @@ const create = (req, res) => {
   res.status(201).json({ mensaje: "Grupo creado correctamente", group }); // Corregido req por res
 };
 
-export default { getById, get, create };
+const deleteById = (req, res) => {
+  const groupId = parseInt(req.params.id);
+  const index = db.findIndex((group) => group.id === groupId);
+
+  if (index !== -1) {
+    const deletedGroup = db.splice(index, 1)[0]; // Remove the group from the array
+    return res
+      .status(200)
+      .json({ message: "Group deleted successfully", deletedGroup });
+  } else {
+    return res.status(404).json({ error: "Group not found" });
+  }
+};
+
+export default { getById, get, create, deleteById };

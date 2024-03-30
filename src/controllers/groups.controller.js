@@ -7,15 +7,20 @@ const getAll = () => {
 };
 
 const getById = () => {
-  groupsService.getById();
+  groupsService.getById("id");
 };
 
 const create = () => {
   groupsService.create();
 };
 
+const deleteById = () => {
+  groupsService.deleteById("id");
+};
+
 export default {
   getAll,
   getById,
   create,
+  deleteById,
 };
