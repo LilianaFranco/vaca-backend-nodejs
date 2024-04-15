@@ -1,6 +1,22 @@
 import { Model } from "../model/model.js";
+// import { ConflictException } from "../exceptions/index.js";
+import Exceptions from "../exceptions/index.js";
 
 const groupModel = Model();
+
+/* ToDo: mover esto a su propio endpoint 
+y consumirlo desde el color picker para 
+que los colores tengan un único origen */
+const colorPalette = [
+  "#A65293",
+  "#66B04C",
+  "#995036",
+  "#4E80A5",
+  "#CCCCCC",
+  "#FFA72F",
+  "#FF2530",
+  "#FFFFFF",
+];
 
 const getAll = () => {
   return groupModel.getAll();
@@ -8,42 +24,64 @@ const getAll = () => {
 
 const getById = (id) => {
   const group = groupModel.getById(id);
-  if (!group) {
-    throw new Error("Group not found");
-  }
   return group;
 };
 
+const nameValidation = (name) => {
+  if (name.length > 30) {
+    throw new Error("Invalid name length");
+  }
+};
+
+const colorValidation = (color) => {
+  if (!colorPalette.includes(color)) {
+    throw new Error("Invalid color");
+  }
+};
+
 const create = (newGroup) => {
-  //Agregar validaciones del backend (nombre 30 o 0 (string), el color (string), userid(int))
-  try {
-    const existingGroup = groupModel
-      .getAll()
-      .find((group) => group.name === newGroup.name);
-    if (existingGroup) {
-      throw new Error("Group already exists");
-    }
-    const createdGroup = groupModel.create(newGroup);
-    return createdGroup;
-  } catch (error) {
-    throw error;
+  const { name, color, ownerUserId } = newGroup;
+  //Agregar validaciones del backend userid(int))
+  nameValidation(name);
+  colorValidation(color);
+  //ToDo: volverlo case insensitive
+  const existingGroup = groupModel
+    .getAll()
+    .find((group) => group.name === name);
+  if (existingGroup) {
+    throw new Exceptions.ConflictException("Group already exists");
+  }
+  const createdGroup = groupModel.create(newGroup);
+  return createdGroup;
+};
+
+const checkGroup = (id) => {
+  const existingGroupValidation = groupModel.getById(id);
+  if (!existingGroupValidation) {
+    throw new Error("The group doesn't exist");
   }
 };
 
 const editById = (id, group) => {
-  const isUpdated = groupModel.update(id, group);
-  if (!isUpdated) {
-    throw new Error("Group not found");
+  checkGroup(id);
+  nameValidation(group.name);
+  colorValidation(group.color);
+  const repetedNameValidation = groupModel
+    .getAll()
+    .find(
+      (foundGroup) => foundGroup.name === group.name && foundGroup.id !== id
+    );
+  if (repetedNameValidation) {
+    throw new Error("Group name already exists");
   }
+  groupModel.update(id, group);
   return groupModel.getById(id);
 };
 
 const deleteById = (id) => {
-  const isDeleted = groupModel.delete(id);
-  if (!isDeleted) {
-    throw new Error("Group not found");
-  }
-  return { success: true };
+  checkGroup(id);
+  groupModel.delete(id);
+  return { message: "Group deleted" };
 };
 
 export default { getAll, getById, create, editById, deleteById };
