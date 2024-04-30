@@ -29,13 +29,13 @@ const getById = (id) => {
 
 const nameValidation = (name) => {
   if (name.length > 30) {
-    throw new Error("Invalid name length");
+    throw new Exceptions.BadRequestException("Invalid name length");
   }
 };
 
 const colorValidation = (color) => {
   if (!colorPalette.includes(color)) {
-    throw new Error("Invalid color");
+    throw new Exceptions.BadRequestException("Invalid color");
   }
 };
 
@@ -58,7 +58,7 @@ const create = (newGroup) => {
 const checkGroup = (id) => {
   const existingGroupValidation = groupModel.getById(id);
   if (!existingGroupValidation) {
-    throw new Error("The group doesn't exist");
+    throw new Exceptions.NotFoundException("The group doesn't exist");
   }
 };
 
@@ -72,7 +72,7 @@ const editById = (id, group) => {
       (foundGroup) => foundGroup.name === group.name && foundGroup.id !== id
     );
   if (repetedNameValidation) {
-    throw new Error("Group name already exists");
+    throw new Exceptions.ConflictException("Group name already exists");
   }
   groupModel.update(id, group);
   return groupModel.getById(id);

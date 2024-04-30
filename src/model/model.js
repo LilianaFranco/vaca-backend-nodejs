@@ -1,18 +1,20 @@
+import connection from "../lib/connection.js";
+
 const Model = () => {
   const entities = [];
 
-  console.log(4, "[Group] Model");
-
-  const getById = (id) => {
+  const getById = async (id) => {
     console.log(4.1, "[Database] Model findUnique");
-
-    return entities.find((entity) => entity.id === id);
   };
 
-  const getAll = () => {
-    console.log(4.1, "[Database] Model findMany");
+  const getAll = async () => {
+    const client = await connection.connect();
 
-    return entities;
+    const res = await client.query("SELECT * FROM groups");
+
+    console.log(res);
+
+    return res;
   };
 
   const create = (entity) => {
