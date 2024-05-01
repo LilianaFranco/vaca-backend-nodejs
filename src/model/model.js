@@ -1,60 +1,61 @@
+import connection from "../lib/connection.js";
+
 const Model = () => {
   const entities = [];
 
-  console.log(4, "[Group] Model");
-
-  const getById = (id) => {
-    console.log(4.1, "[Database] Model findUnique");
-
-    return entities.find((entity) => entity.id === id);
+  const getById = async (id) => {
+    const client = await connection.connect();
+    const res = await client.query("SELECT * FROM groups WHERE id= $1", [id]);
+    client.release();
+    return res.rows[0];
   };
 
-  const getAll = () => {
-    console.log(4.1, "[Database] Model findMany");
+  const getAll = async () => {
+    const client = await connection.connect();
 
-    return entities;
+    const res = await client.query(
+      "SELECT * FROM groups ORDER BY createdAt DESC"
+    );
+
+    client.release();
+    return res.rows;
   };
 
-  const create = (entity) => {
-    console.log(4.1, "[Database] Model create");
+  const create = async (entity) => {
+    console.log(entity);
+    const client = await connection.connect();
 
-    const maxId = entities.reduce((max, { id }) => Math.max(max, id), 0);
-    const newId = (maxId + 1).toString();
-    const newEntity = {
-      ...entity,
-      id: newId,
-    };
-    entities.push(newEntity);
+    const res = await client.query(
+      "INSERT into Groups (name, color, ownerUserId, createdAt) values ($1, $2, $3, now()) returning *",
+      [entity.name, entity.color, 1]
+    );
 
-    return newEntity;
+    client.release();
+
+    return res.rows;
   };
 
-  const update = (id, newEntity) => {
-    console.log(4.1, "[Database] Model update");
+  const update = async (id, entity) => {
+    const client = await connection.connect();
 
-    const entityIndex = entities.findIndex((entity) => entity.id === id);
+    const res = await client.query(
+      "UPDATE Groups SET name = $1, color = $2 WHERE id=$3 returning *",
+      [entity.name, entity.color, id]
+    );
 
-    if (entityIndex !== -1) {
-      entities[entityIndex] = newEntity;
+    client.release();
 
-      return true;
-    }
-
-    return false;
+    return res.rows[0];
   };
 
-  const del = (id) => {
-    console.log(4.1, "[Database] Model delete");
+  const del = async (id) => {
+    const client = await connection.connect();
 
-    const entityIndex = entities.findIndex((entity) => entity.id === id);
+    const res = await client.query("DELETE from Groups WHERE id = $1", [id]);
 
-    if (entityIndex !== -1) {
-      entities.splice(entityIndex, 1);
+    client.release();
 
-      return true;
-    }
-
-    return false;
+    return !!res.rowCount;
   };
 
   return {
