@@ -40,48 +40,38 @@ const colorValidation = (color) => {
 };
 
 const create = (newGroup) => {
-  const { name, color, ownerUserId } = newGroup;
+  const { name, color } = newGroup;
   //Agregar validaciones del backend userid(int))
   nameValidation(name);
   colorValidation(color);
   //ToDo: volverlo case insensitive
-  const existingGroup = groupModel
-    .getAll()
-    .find((group) => group.name === name);
-  if (existingGroup) {
-    throw new Exceptions.ConflictException("Group already exists");
-  }
-  const createdGroup = groupModel.create(newGroup);
-  return createdGroup;
+  // const existingGroup = groupModel
+  //   .getAll()
+  //   .find((group) => group.name === name);
+  // if (existingGroup) {
+  //   throw new Exceptions.ConflictException("Group already exists");
+  // }
+  return groupModel.create(newGroup);
 };
 
-const checkGroup = (id) => {
-  const existingGroupValidation = groupModel.getById(id);
+const checkGroup = async (id) => {
+  const existingGroupValidation = await groupModel.getById(id);
   if (!existingGroupValidation) {
     throw new Exceptions.NotFoundException("The group doesn't exist");
   }
 };
 
-const editById = (id, group) => {
-  checkGroup(id);
+const editById = async (id, group) => {
+  await checkGroup(id);
   nameValidation(group.name);
   colorValidation(group.color);
-  const repetedNameValidation = groupModel
-    .getAll()
-    .find(
-      (foundGroup) => foundGroup.name === group.name && foundGroup.id !== id
-    );
-  if (repetedNameValidation) {
-    throw new Exceptions.ConflictException("Group name already exists");
-  }
-  groupModel.update(id, group);
-  return groupModel.getById(id);
+  return groupModel.update(id, group);
 };
 
-const deleteById = (id) => {
-  checkGroup(id);
-  groupModel.delete(id);
-  return { message: "Group deleted" };
+const deleteById = async (id) => {
+  await checkGroup(id);
+
+  return groupModel.delete(id);
 };
 
 export default { getAll, getById, create, editById, deleteById };

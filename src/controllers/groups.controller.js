@@ -5,7 +5,7 @@ const getAll = async (req, res) => {
   return res.status(200).json({ groups });
 };
 
-const getById = (req, res) => {
+const getById = async (req, res) => {
   const id = req.params.id;
   console.log(`This is the ${id}`);
   //NaN is falsy
@@ -13,7 +13,7 @@ const getById = (req, res) => {
     return res.status(400).json({ message: "Id not valid" });
   }
 
-  const group = groupsService.getById(id);
+  const group = await groupsService.getById(id);
   if (!group) {
     return res
       .status(404)
@@ -22,7 +22,7 @@ const getById = (req, res) => {
   return res.status(200).json({ group });
 };
 
-const create = (req, res) => {
+const create = async (req, res) => {
   //Que me manden nombre
   const { name, color } = req.body;
   if (!name) {
@@ -50,20 +50,21 @@ const create = (req, res) => {
     return res.status(400).json({ message: "Color is empty" });
   }
   try {
-    const newGroup = groupsService.create(req.body);
+    const newGroup = await groupsService.create(req.body);
     return res.status(201).json({ group: newGroup });
   } catch (error) {
     //ToDo: Eliminar el 400 cuando todas las excepciones ya estén cambiadas
-    return res.status(error.statusCode).send({ error: error.message });
+    return res.status(error.statusCode || 400).send({ error: error.message });
   }
 };
 
-const editById = (req, res) => {
+const editById = async (req, res) => {
   const id = req.params.id;
   const { name, color } = req.body;
 
-  if (typeof id !== "number") {
-    return res.status(400).json({ message: "id is not a number" });
+  //NaN is falsy
+  if (!parseInt(id)) {
+    return res.status(400).json({ message: "Id not valid" });
   }
   //ToDo : refactor con validaciones del create
   if (!name) {
@@ -91,7 +92,7 @@ const editById = (req, res) => {
     return res.status(400).json({ message: "Color is empty" });
   }
   try {
-    const newGroup = groupsService.editById(id, req.body);
+    const newGroup = await groupsService.editById(id, req.body);
     return res.status(201).json({ group: newGroup });
   } catch (error) {
     //ToDo: Eliminar el 400 cuando todas las excepciones ya estén cambiadas
@@ -99,14 +100,16 @@ const editById = (req, res) => {
   }
 };
 
-const deleteById = (req, res) => {
-  const { id } = req.body;
+const deleteById = async (req, res) => {
+  const { id } = req.params;
 
-  if (typeof id !== "number") {
-    return res.status(400).json({ message: "id is not a number" });
+  //NaN is falsy
+  if (!parseInt(id)) {
+    return res.status(400).json({ message: "Id not valid" });
   }
-  groupsService.editById(id);
-  return res.status(204).send();
+
+  const wasDeleted = await groupsService.deleteById(id);
+  return wasDeleted ? res.status(204).send() : res.status(409).send();
 };
 
 export default {
