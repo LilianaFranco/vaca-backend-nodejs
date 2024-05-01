@@ -39,18 +39,15 @@ const colorValidation = (color) => {
   }
 };
 
-const create = (newGroup) => {
+const create = async (newGroup) => {
   const { name, color } = newGroup;
   //Agregar validaciones del backend userid(int))
   nameValidation(name);
   colorValidation(color);
-  //ToDo: volverlo case insensitive
-  // const existingGroup = groupModel
-  //   .getAll()
-  //   .find((group) => group.name === name);
-  // if (existingGroup) {
-  //   throw new Exceptions.ConflictException("Group already exists");
-  // }
+
+  if (await groupModel.getByName(name)) {
+    throw new Exceptions.ConflictException("Group already exists");
+  }
   return groupModel.create(newGroup);
 };
 

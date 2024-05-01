@@ -3,13 +3,6 @@ import connection from "../lib/connection.js";
 const Model = () => {
   const entities = [];
 
-  const getById = async (id) => {
-    const client = await connection.connect();
-    const res = await client.query("SELECT * FROM groups WHERE id= $1", [id]);
-    client.release();
-    return res.rows[0];
-  };
-
   const getAll = async () => {
     const client = await connection.connect();
 
@@ -21,8 +14,25 @@ const Model = () => {
     return res.rows;
   };
 
+  const getById = async (id) => {
+    const client = await connection.connect();
+    const res = await client.query("SELECT * FROM groups WHERE id= $1", [id]);
+    client.release();
+    return res.rows[0];
+  };
+
+  const getByName = async (name) => {
+    const client = await connection.connect();
+    const res = await client.query(
+      "SELECT COUNT(*) FROM groups WHERE name= $1",
+      [name]
+    );
+    client.release();
+
+    return res.rows[0].count > 0;
+  };
+
   const create = async (entity) => {
-    console.log(entity);
     const client = await connection.connect();
 
     const res = await client.query(
@@ -64,6 +74,7 @@ const Model = () => {
     create,
     delete: del,
     update,
+    getByName,
   };
 };
 
