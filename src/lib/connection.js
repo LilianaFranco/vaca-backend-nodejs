@@ -3,8 +3,6 @@ import "dotenv/config";
 
 const { Pool } = pg;
 
-console.log(process.env.PGUSER);
-
 const pool = new Pool();
 //   {
 //   user: process.env.PGUSER,

@@ -1,6 +1,7 @@
 import groupsService from "../services/groups.service.js";
 
 const getAll = async (req, res) => {
+  console.log("juan:", req.user);
   const groups = await groupsService.getAll();
   return res.status(200).json({ groups });
 };

@@ -17,7 +17,7 @@ const create = async (newUser) => {
   const { name, email, password } = newUser;
   //Agregar validaciones del backend userid(int))
 
-  if (await usersModel.getByEmail(email)) {
+  if (await usersModel.existByEmail(email)) {
     throw new Exceptions.ConflictException("The user already exists");
   }
   return usersModel.create(newUser);
