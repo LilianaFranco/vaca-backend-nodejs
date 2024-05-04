@@ -1,4 +1,5 @@
 import connection from "../lib/connection.js";
+import bcrypt from "bcrypt";
 
 const Model = () => {
   const entities = [];
@@ -19,7 +20,7 @@ const Model = () => {
     return res.rows[0];
   };
 
-  const getByEmail = async (email) => {
+  const existByEmail = async (email) => {
     const client = await connection.connect();
     const res = await client.query(
       "SELECT COUNT(*) FROM users WHERE email= $1",
@@ -30,12 +31,23 @@ const Model = () => {
     return res.rows[0].count > 0;
   };
 
-  const create = async (entity) => {
+  const getByEmail = async (email) => {
     const client = await connection.connect();
+    const res = await client.query("SELECT * FROM users WHERE email= $1", [
+      email,
+    ]);
+    client.release();
 
+    return res.rows[0];
+  };
+
+  const create = async (user) => {
+    const client = await connection.connect();
+    const { name, email, password } = user;
+    user.password = await bcrypt.hash(user.password, 10);
     const res = await client.query(
-      "INSERT into users (name, email, password, createdAt) values ($1, $2, $3, now()) returning *",
-      [entity.name, entity.email, entity.password]
+      "INSERT into users (name, email, password, createdAt) values ($1, $2, $3, now()) returning name, email",
+      [name, email, password]
     );
 
     client.release();
@@ -74,6 +86,7 @@ const Model = () => {
     create,
     delete: del,
     update,
+    existByEmail,
     getByEmail,
   };
 };
