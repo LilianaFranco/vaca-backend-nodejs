@@ -1,4 +1,4 @@
-import { Model } from "../model/model.js";
+import { Model } from "../model/groupsModel.js";
 // import { ConflictException } from "../exceptions/index.js";
 import Exceptions from "../exceptions/index.js";
 
