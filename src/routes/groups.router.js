@@ -6,12 +6,12 @@ const groupsRouter = express.Router();
 
 groupsRouter.get(
   "/",
-  passport.authenticate("jwt", { session: false }),
+  // passport.authenticate("jwt", { session: false }),
   groupsController.getAll
 );
 groupsRouter.get(
   "/:id",
-  passport.authenticate("jwt", { session: false }),
+  // passport.authenticate("jwt", { session: false }),
   groupsController.getById
 );
 groupsRouter.post("/", groupsController.create);

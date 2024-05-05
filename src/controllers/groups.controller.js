@@ -1,4 +1,6 @@
 import groupsService from "../services/groups.service.js";
+import { newGroupSchemaValidation } from "../validations/groups.schema.validations.js";
+import { groupIdSchemaValidation } from "../validations/groups.schema.validations.js";
 
 const getAll = async (req, res) => {
   console.log("juan:", req.user);
@@ -7,11 +9,12 @@ const getAll = async (req, res) => {
 };
 
 const getById = async (req, res) => {
-  const id = req.params.id;
-  console.log(`This is the ${id}`);
-  //NaN is falsy
-  if (!parseInt(id)) {
-    return res.status(400).json({ message: "Id not valid" });
+  const { id } = req.params;
+  const { error } = groupIdSchemaValidation.validate({ id });
+  if (error) {
+    return res.status(400).json({
+      message: error.details.map((detail) => detail.message),
+    });
   }
 
   const group = await groupsService.getById(id);
@@ -24,32 +27,16 @@ const getById = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  //Que me manden nombre
-  const { name, color } = req.body;
-  if (!name) {
-    return res.status(400).json({ message: "Name not valid" });
-  }
-  //Que el nombre sea tipo string
-  if (typeof name !== "string") {
-    return res.status(400).json({ message: "Name is not a string" });
-  }
-  //Que el nombre no sea un string vacío
-  if (!name.trim()) {
-    return res.status(400).json({ message: "Name is empty" });
+  const { error, value } = newGroupSchemaValidation.validate(req.body, {
+    abortEarly: false,
+  });
+
+  if (error) {
+    return res.status(400).json({
+      message: error.details.map((detail) => error.message),
+    });
   }
 
-  //Que me manden color
-  if (!color) {
-    return res.status(400).json({ message: "Color not valid" });
-  }
-  //Que el nombre sea tipo string
-  if (typeof color !== "string") {
-    return res.status(400).json({ message: "Color is not a string" });
-  }
-  //Que el nombre no sea un string vacío
-  if (!color.trim()) {
-    return res.status(400).json({ message: "Color is empty" });
-  }
   try {
     const newGroup = await groupsService.create(req.body);
     return res.status(201).json({ group: newGroup });
@@ -61,36 +48,15 @@ const create = async (req, res) => {
 
 const editById = async (req, res) => {
   const id = req.params.id;
-  const { name, color } = req.body;
 
-  //NaN is falsy
-  if (!parseInt(id)) {
-    return res.status(400).json({ message: "Id not valid" });
-  }
-  //ToDo : refactor con validaciones del create
-  if (!name) {
-    return res.status(400).json({ message: "Name not valid" });
-  }
-  //Que el nombre sea tipo string
-  if (typeof name !== "string") {
-    return res.status(400).json({ message: "Name is not a string" });
-  }
-  //Que el nombre no sea un string vacío
-  if (!name.trim()) {
-    return res.status(400).json({ message: "Name is empty" });
-  }
+  const { error, value } = newGroupSchemaValidation.validate(req.body, {
+    abortEarly: false,
+  });
 
-  //Que me manden color
-  if (!color) {
-    return res.status(400).json({ message: "Color not valid" });
-  }
-  //Que el nombre sea tipo string
-  if (typeof color !== "string") {
-    return res.status(400).json({ message: "Color is not a string" });
-  }
-  //Que el nombre no sea un string vacío
-  if (!color.trim()) {
-    return res.status(400).json({ message: "Color is empty" });
+  if (error) {
+    return res.status(400).json({
+      message: error.details.map((detail) => error.message),
+    });
   }
   try {
     const newGroup = await groupsService.editById(id, req.body);
@@ -104,9 +70,11 @@ const editById = async (req, res) => {
 const deleteById = async (req, res) => {
   const { id } = req.params;
 
-  //NaN is falsy
-  if (!parseInt(id)) {
-    return res.status(400).json({ message: "Id not valid" });
+  const { error } = idSchemaValidation.validate({ id });
+  if (error) {
+    return res.status(400).json({
+      message: error.details.map((detail) => detail.message),
+    });
   }
 
   const wasDeleted = await groupsService.deleteById(id);
