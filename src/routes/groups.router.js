@@ -6,16 +6,28 @@ const groupsRouter = express.Router();
 
 groupsRouter.get(
   "/",
-  // passport.authenticate("jwt", { session: false }),
+  passport.authenticate("jwt", { session: false }),
   groupsController.getAll
 );
 groupsRouter.get(
   "/:id",
-  // passport.authenticate("jwt", { session: false }),
+  passport.authenticate("jwt", { session: false }),
   groupsController.getById
 );
-groupsRouter.post("/", groupsController.create);
-groupsRouter.put("/:id", groupsController.editById);
-groupsRouter.delete("/:id", groupsController.deleteById);
+groupsRouter.post(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  groupsController.create
+);
+groupsRouter.put(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  groupsController.editById
+);
+groupsRouter.delete(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  groupsController.deleteById
+);
 
 export default groupsRouter;
