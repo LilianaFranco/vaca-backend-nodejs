@@ -1,8 +1,8 @@
 import express from "express";
 import groupsRouter from "./routes/groups.router.js";
 import usersRouter from "./routes/users.router.js";
-import passport from "passport";
 import "./utils/passport.config.js";
+import authMiddleware from "./middlewares/auth.middleware.js";
 
 import cors from "cors";
 
@@ -14,6 +14,7 @@ const port = 3001;
 app.use(express.json());
 // app.use(passport.initialize());
 app.use(cors());
+app.use(authMiddleware);
 
 app.use("/login", loginRouter);
 
