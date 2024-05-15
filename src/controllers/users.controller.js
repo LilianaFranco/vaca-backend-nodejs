@@ -1,4 +1,6 @@
 import usersService from "../services/users.service.js";
+import { newUserSchemaValidation } from "../validations/users.schema.validations.js";
+import { userIdSchemaValidation } from "../validations/users.schema.validations.js";
 
 const getAll = async (req, res) => {
   const users = await usersService.getAll();
@@ -8,9 +10,12 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
   const id = req.params.id;
   console.log(`This is the ${id}`);
-  //NaN is falsy
-  if (!parseInt(id)) {
-    return res.status(400).json({ message: "Id not valid" });
+
+  const { error } = userIdSchemaValidation.validate({ id });
+  if (error) {
+    return res.status(400).json({
+      message: error.details.map((detail) => detail.message),
+    });
   }
 
   const user = await usersService.getById(id);
@@ -23,18 +28,14 @@ const getById = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  //Que me manden email
-  const { name, email, password } = req.body;
-  if (!email) {
-    return res.status(400).json({ message: "Email not valid" });
-  }
-  //Que el nombre sea tipo string
-  if (typeof name !== "string") {
-    return res.status(400).json({ message: "Name is not a string" });
-  }
-  //Que el nombre no sea un string vacío
-  if (!name.trim()) {
-    return res.status(400).json({ message: "Name is empty" });
+  const { error, value } = newUserSchemaValidation.validate(req.body, {
+    abortEarly: false,
+  });
+
+  if (error) {
+    return res.status(400).json({
+      message: error.details.map((detail) => error.message),
+    });
   }
 
   try {
@@ -48,8 +49,12 @@ const create = async (req, res) => {
 
 const editById = async (req, res) => {
   const id = req.params.id;
-  const { name, email, password } = req.body;
-
+  const { error } = userIdSchemaValidation.validate({ id });
+  if (error) {
+    return res.status(400).json({
+      message: error.details.map((detail) => detail.message),
+    });
+  }
   try {
     const newUser = await usersService.editById(id, req.body);
     return res.status(201).json({ user: newUser });

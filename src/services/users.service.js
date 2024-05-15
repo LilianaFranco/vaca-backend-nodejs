@@ -31,7 +31,7 @@ const checkUser = async (email) => {
 };
 
 const editById = async (id, user) => {
-  await checkUser(email);
+  await checkUser(user.email);
   return usersModel.update(id, user);
 };
 
