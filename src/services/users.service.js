@@ -13,14 +13,13 @@ const getById = (id) => {
   return user;
 };
 
-const create = async (newUser) => {
-  const { name, email, password } = newUser;
-  //Agregar validaciones del backend userid(int))
+const create = async (user) => {
+  const { name, email, password } = user;
 
   if (await usersModel.existByEmail(email)) {
     throw new Exceptions.ConflictException("The user already exists");
   }
-  return usersModel.create(newUser);
+  return usersModel.create(user);
 };
 
 const checkUser = async (email) => {

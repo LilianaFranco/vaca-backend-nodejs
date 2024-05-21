@@ -1,6 +1,10 @@
 import { Model } from "../model/groupsModel.js";
 // import { ConflictException } from "../exceptions/index.js";
 import Exceptions from "../exceptions/index.js";
+import {
+  groupIdSchemaValidation,
+  newGroupSchemaValidation,
+} from "../validations/groups.schema.validations.js";
 
 const groupModel = Model();
 
@@ -27,41 +31,27 @@ const getById = (id) => {
   return group;
 };
 
-const nameValidation = (name) => {
-  if (name.length > 30) {
-    throw new Exceptions.BadRequestException("Invalid name length");
-  }
-};
-
-const colorValidation = (color) => {
-  if (!colorPalette.includes(color)) {
-    throw new Exceptions.BadRequestException("Invalid color");
-  }
-};
-
 const create = async (newGroup) => {
   const { name, color } = newGroup;
-  //Agregar validaciones del backend userid(int))
-  nameValidation(name);
-  colorValidation(color);
+  const { error } = groupIdSchemaValidation.validate({ id });
 
   if (await groupModel.getByName(name)) {
-    throw new Exceptions.ConflictException("Group already exists");
+    throw new error();
   }
   return groupModel.create(newGroup);
 };
 
 const checkGroup = async (id) => {
+  const { error } = groupIdSchemaValidation.validate({ id });
   const existingGroupValidation = await groupModel.getById(id);
   if (!existingGroupValidation) {
-    throw new Exceptions.NotFoundException("The group doesn't exist");
+    throw new error();
   }
 };
 
 const editById = async (id, group) => {
   await checkGroup(id);
-  nameValidation(group.name);
-  colorValidation(group.color);
+
   return groupModel.update(id, group);
 };
 

@@ -43,10 +43,9 @@ const Model = () => {
   };
 
   const create = async (user) => {
-    console.log("encript", user);
     const client = await connection.connect();
     const { name, email, password } = user;
-    const encryptedPassword = await bcrypt.hash(user.password, 10);
+    const encryptedPassword = await bcrypt.hash(password, 10);
     const res = await client.query(
       "INSERT into users (name, email, password, createdAt) values ($1, $2, $3, now()) returning name, email",
       [name, email, encryptedPassword]

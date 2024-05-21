@@ -12,25 +12,20 @@ const app = express();
 const port = 3001;
 
 app.use(express.json());
-// app.use(passport.initialize());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Adjust to your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(authMiddleware);
 
 app.use("/login", loginRouter);
 
-app.use(
-  "/groups",
-  // passport.authenticate("jwt", { session: false }),
-  groupsRouter
-); //Este enpoint está protegido por eso no funcionará el front
+app.use("/groups", groupsRouter);
 app.use("/users", usersRouter);
-// app.get(
-//   "/check",
-//   passport.authenticate("jwt", { session: false }),
-//   (req, res) => {
-//     res.send("You are authenticated");
-//   }
-// );
+
 app.listen(port, () => {
   console.log(`Escuchando ando en el puerto ${port}`);
 });

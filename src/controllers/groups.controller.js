@@ -3,7 +3,6 @@ import { newGroupSchemaValidation } from "../validations/groups.schema.validatio
 import { groupIdSchemaValidation } from "../validations/groups.schema.validations.js";
 
 const getAll = async (req, res) => {
-  console.log("juan:", req.user);
   const groups = await groupsService.getAll();
   return res.status(200).json({ groups });
 };
@@ -27,14 +26,13 @@ const getById = async (req, res) => {
 };
 
 const create = async (req, res) => {
+  console.log("create", req.body);
   const { error, value } = newGroupSchemaValidation.validate(req.body, {
     abortEarly: false,
   });
 
   if (error) {
-    return res.status(400).json({
-      message: error.details.map((detail) => error.message),
-    });
+    return error;
   }
 
   try {
@@ -69,8 +67,9 @@ const editById = async (req, res) => {
 
 const deleteById = async (req, res) => {
   const { id } = req.params;
+  console.log(id);
 
-  const { error } = idSchemaValidation.validate({ id });
+  const { error } = groupIdSchemaValidation.validate({ id });
   if (error) {
     return res.status(400).json({
       message: error.details.map((detail) => detail.message),

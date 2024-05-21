@@ -9,7 +9,6 @@ const getAll = async (req, res) => {
 
 const getById = async (req, res) => {
   const id = req.params.id;
-  console.log(`This is the ${id}`);
 
   const { error } = userIdSchemaValidation.validate({ id });
   if (error) {
@@ -42,7 +41,6 @@ const create = async (req, res) => {
     const newUser = await usersService.create(req.body);
     return res.status(201).json({ user: newUser });
   } catch (error) {
-    //ToDo: Eliminar el 400 cuando todas las excepciones ya estén cambiadas
     return res.status(error.statusCode || 400).send({ error: error.message });
   }
 };

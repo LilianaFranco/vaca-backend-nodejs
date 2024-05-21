@@ -1,6 +1,5 @@
 import express from "express";
 import groupsController from "../controllers/groups.controller.js";
-import passport from "passport";
 
 const groupsRouter = express.Router();
 
