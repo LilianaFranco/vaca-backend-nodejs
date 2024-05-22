@@ -1,10 +1,5 @@
 import { Model } from "../model/groupsModel.js";
-// import { ConflictException } from "../exceptions/index.js";
 import Exceptions from "../exceptions/index.js";
-import {
-  groupIdSchemaValidation,
-  newGroupSchemaValidation,
-} from "../validations/groups.schema.validations.js";
 
 const groupModel = Model();
 
@@ -32,32 +27,26 @@ const getById = (id) => {
 };
 
 const create = async (newGroup) => {
-  const { name, color } = newGroup;
-  const { error } = groupIdSchemaValidation.validate({ id });
-
-  if (await groupModel.getByName(name)) {
-    throw new error();
+  if (await groupModel.getByName(newGroup.name)) {
+    throw new Exceptions.ConflictException("Group already exists");
   }
   return groupModel.create(newGroup);
 };
 
 const checkGroup = async (id) => {
-  const { error } = groupIdSchemaValidation.validate({ id });
   const existingGroupValidation = await groupModel.getById(id);
   if (!existingGroupValidation) {
-    throw new error();
+    throw new Exceptions.NotFoundException("The group does not exist.");
   }
 };
 
 const editById = async (id, group) => {
   await checkGroup(id);
-
   return groupModel.update(id, group);
 };
 
 const deleteById = async (id) => {
   await checkGroup(id);
-
   return groupModel.delete(id);
 };
 

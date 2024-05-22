@@ -11,7 +11,6 @@ const authMiddleware = (req, res, next) => {
   const shouldApplyAuth = routesWithoutAuth.some((route) => {
     return route.url !== req.path && route.method !== req.method;
   });
-  console.log(shouldApplyAuth);
   if (shouldApplyAuth) {
     authenticate(req, res, next);
   } else {

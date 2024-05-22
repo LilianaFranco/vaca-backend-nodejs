@@ -1,6 +1,8 @@
 import groupsService from "../services/groups.service.js";
-import { newGroupSchemaValidation } from "../validations/groups.schema.validations.js";
-import { groupIdSchemaValidation } from "../validations/groups.schema.validations.js";
+import {
+  newGroupSchemaValidation,
+  groupIdSchemaValidation,
+} from "../validations/groups.schema.validations.js";
 
 const getAll = async (req, res) => {
   const groups = await groupsService.getAll();
@@ -29,14 +31,17 @@ const create = async (req, res) => {
   console.log("create", req.body);
   const { error, value } = newGroupSchemaValidation.validate(req.body, {
     abortEarly: false,
+    stripUnknown: true,
   });
 
   if (error) {
-    return error;
+    return res.status(400).json({
+      message: error.details.map((detail) => detail.message),
+    });
   }
 
   try {
-    const newGroup = await groupsService.create(req.body);
+    const newGroup = await groupsService.create(value);
     return res.status(201).json({ group: newGroup });
   } catch (error) {
     //ToDo: Eliminar el 400 cuando todas las excepciones ya estén cambiadas
@@ -49,6 +54,7 @@ const editById = async (req, res) => {
 
   const { error, value } = newGroupSchemaValidation.validate(req.body, {
     abortEarly: false,
+    stripUnknown: true,
   });
 
   if (error) {
@@ -57,7 +63,7 @@ const editById = async (req, res) => {
     });
   }
   try {
-    const newGroup = await groupsService.editById(id, req.body);
+    const newGroup = await groupsService.editById(id, value);
     return res.status(201).json({ group: newGroup });
   } catch (error) {
     //ToDo: Eliminar el 400 cuando todas las excepciones ya estén cambiadas

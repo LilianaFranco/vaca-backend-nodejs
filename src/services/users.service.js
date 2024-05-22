@@ -1,5 +1,4 @@
 import { Model } from "../model/usersModel.js";
-// import { ConflictException } from "../exceptions/index.js";
 import Exceptions from "../exceptions/index.js";
 
 const usersModel = Model();
@@ -14,9 +13,7 @@ const getById = (id) => {
 };
 
 const create = async (user) => {
-  const { name, email, password } = user;
-
-  if (await usersModel.existByEmail(email)) {
+  if (await usersModel.existByEmail(user.email)) {
     throw new Exceptions.ConflictException("The user already exists");
   }
   return usersModel.create(user);
@@ -34,10 +31,4 @@ const editById = async (id, user) => {
   return usersModel.update(id, user);
 };
 
-const deleteByEmail = async (email) => {
-  await checkUser(email);
-
-  return usersModel.delete(email);
-};
-
-export default { getAll, getById, create, editById, deleteByEmail };
+export default { getAll, getById, create, editById };

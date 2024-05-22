@@ -1,8 +1,19 @@
 import loginService from "../services/login.service.js";
 
 const login = async (req, res) => {
+  const { error, value } = loginSchemaValidation.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true,
+  });
+
+  if (error) {
+    return res.status(400).json({
+      message: error.details.map((detail) => detail.message),
+    });
+  }
+
   try {
-    const { email, password } = req.body;
+    const { email, password } = value;
     const token = await loginService.login(email, password);
     res.json({ token });
   } catch (error) {

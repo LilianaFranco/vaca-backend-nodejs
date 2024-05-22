@@ -1,4 +1,3 @@
-import { userInfo } from "os";
 import connection from "../lib/connection.js";
 import bcrypt from "bcrypt";
 
@@ -69,23 +68,10 @@ const Model = () => {
     return res.rows[0];
   };
 
-  const del = async (email) => {
-    const client = await connection.connect();
-
-    const res = await client.query("DELETE from users WHERE email = $1", [
-      email,
-    ]);
-
-    client.release();
-
-    return !!res.rowCount;
-  };
-
   return {
     getById,
     getAll,
     create,
-    delete: del,
     update,
     existByEmail,
     getByEmail,

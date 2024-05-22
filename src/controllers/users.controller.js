@@ -9,7 +9,6 @@ const getAll = async (req, res) => {
 
 const getById = async (req, res) => {
   const id = req.params.id;
-
   const { error } = userIdSchemaValidation.validate({ id });
   if (error) {
     return res.status(400).json({
@@ -29,6 +28,7 @@ const getById = async (req, res) => {
 const create = async (req, res) => {
   const { error, value } = newUserSchemaValidation.validate(req.body, {
     abortEarly: false,
+    stripUnknown: true,
   });
 
   if (error) {
@@ -38,7 +38,7 @@ const create = async (req, res) => {
   }
 
   try {
-    const newUser = await usersService.create(req.body);
+    const newUser = await usersService.create(value);
     return res.status(201).json({ user: newUser });
   } catch (error) {
     return res.status(error.statusCode || 400).send({ error: error.message });
@@ -62,15 +62,4 @@ const editById = async (req, res) => {
   }
 };
 
-const deleteByEmail = async (req, res) => {
-  const { email } = req.body;
-
-  if (!email) {
-    return res.status(400).json({ message: "Email not valid" });
-  }
-
-  const wasDeleted = await usersService.deleteByEmail(email);
-  return wasDeleted ? res.status(204).send() : res.status(409).send();
-};
-
-export default { getAll, getById, create, editById, deleteByEmail };
+export default { getAll, getById, create, editById };
