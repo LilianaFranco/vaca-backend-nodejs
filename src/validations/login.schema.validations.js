@@ -1,3 +1,5 @@
+import Joi from "joi";
+
 const loginSchemaValidation = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string()

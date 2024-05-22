@@ -1,4 +1,5 @@
 import loginService from "../services/login.service.js";
+import loginSchemaValidation from "../validations/login.schema.validations.js";
 
 const login = async (req, res) => {
   const { error, value } = loginSchemaValidation.validate(req.body, {
