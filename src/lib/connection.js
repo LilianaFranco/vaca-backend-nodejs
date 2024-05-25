@@ -3,7 +3,11 @@ import "dotenv/config";
 
 const { Pool } = pg;
 
-const pool = new Pool();
+const pool = new Pool({
+  ssl: {
+    rejectUnauthorized: false, // You can set this to true if you have the correct CA certificate
+  },
+});
 //   {
 //   user: process.env.PGUSER,
 //   host: process.env.PGHOST,
