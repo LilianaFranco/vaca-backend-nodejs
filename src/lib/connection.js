@@ -8,6 +8,7 @@ const pool = new Pool({
     rejectUnauthorized: false, // You can set this to true if you have the correct CA certificate
   },
 });
+
 //   {
 //   user: process.env.PGUSER,
 //   host: process.env.PGHOST,

@@ -5,7 +5,8 @@ import {
 } from "../validations/groups.schema.validations.js";
 
 const getAll = async (req, res) => {
-  const groups = await groupsService.getAll();
+  const groups = await groupsService.getAll(req.user.id);
+
   return res.status(200).json({ groups });
 };
 
@@ -28,7 +29,7 @@ const getById = async (req, res) => {
 };
 
 const create = async (req, res) => {
-  console.log("create", req.body);
+  console.log("create", req.body, req.user);
   const { error, value } = newGroupSchemaValidation.validate(req.body, {
     abortEarly: false,
     stripUnknown: true,
@@ -41,7 +42,7 @@ const create = async (req, res) => {
   }
 
   try {
-    const newGroup = await groupsService.create(value);
+    const newGroup = await groupsService.create(value, req.user.id);
     return res.status(201).json({ group: newGroup });
   } catch (error) {
     //ToDo: Eliminar el 400 cuando todas las excepciones ya estén cambiadas
