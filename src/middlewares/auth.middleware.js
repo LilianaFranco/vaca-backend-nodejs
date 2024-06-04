@@ -8,10 +8,10 @@ const routesWithoutAuth = [
 const authenticate = passport.authenticate("jwt", { session: false });
 
 const authMiddleware = (req, res, next) => {
-  const shouldApplyAuth = routesWithoutAuth.some((route) => {
-    return route.url !== req.path && route.method !== req.method;
+  const shouldSkipAuth = routesWithoutAuth.some((route) => {
+    return route.url === req.path && route.method === req.method;
   });
-  if (shouldApplyAuth) {
+  if (!shouldSkipAuth) {
     authenticate(req, res, next);
   } else {
     next();

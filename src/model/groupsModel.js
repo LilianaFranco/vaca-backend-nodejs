@@ -1,13 +1,11 @@
 import connection from "../lib/connection.js";
 
 const Model = () => {
-  const entities = [];
-
-  const getAll = async () => {
+  const getAll = async (userId) => {
     const client = await connection.connect();
-
     const res = await client.query(
-      "SELECT * FROM groups ORDER BY createdAt DESC"
+      "SELECT * FROM groups WHERE owneruserid = $1 ORDER BY createdAt DESC",
+      [userId]
     );
 
     client.release();
@@ -32,12 +30,12 @@ const Model = () => {
     return res.rows[0].count > 0;
   };
 
-  const create = async (entity) => {
+  const create = async (newGroup, userId) => {
     const client = await connection.connect();
 
     const res = await client.query(
       "INSERT into Groups (name, color, ownerUserId, createdAt) values ($1, $2, $3, now()) returning *",
-      [entity.name, entity.color, 1]
+      [newGroup.name, newGroup.color, userId]
     );
 
     client.release();

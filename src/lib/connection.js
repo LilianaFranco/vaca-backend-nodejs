@@ -4,6 +4,7 @@ import "dotenv/config";
 const { Pool } = pg;
 
 const pool = new Pool();
+
 //   {
 //   user: process.env.PGUSER,
 //   host: process.env.PGHOST,

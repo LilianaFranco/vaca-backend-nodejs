@@ -17,8 +17,8 @@ const colorPalette = [
   "#FFFFFF",
 ];
 
-const getAll = () => {
-  return groupModel.getAll();
+const getAll = (userId) => {
+  return groupModel.getAll(userId);
 };
 
 const getById = (id) => {
@@ -26,11 +26,11 @@ const getById = (id) => {
   return group;
 };
 
-const create = async (newGroup) => {
+const create = async (newGroup, userId) => {
   if (await groupModel.getByName(newGroup.name)) {
     throw new Exceptions.ConflictException("Group already exists");
   }
-  return groupModel.create(newGroup);
+  return groupModel.create(newGroup, userId);
 };
 
 const checkGroup = async (id) => {
