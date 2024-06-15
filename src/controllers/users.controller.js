@@ -39,7 +39,7 @@ const create = async (req, res) => {
 
   try {
     const newUser = await usersService.create(value);
-    return res.status(201).json({ user: newUser });
+    return res.status(201).json({ token: newUser });
   } catch (error) {
     return res.status(error.statusCode || 400).send({ error: error.message });
   }

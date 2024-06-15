@@ -1,5 +1,6 @@
 import { Model } from "../model/usersModel.js";
 import Exceptions from "../exceptions/index.js";
+import login from "./login.service.js";
 
 const usersModel = Model();
 
@@ -16,7 +17,9 @@ const create = async (user) => {
   if (await usersModel.existByEmail(user.email)) {
     throw new Exceptions.ConflictException("The user already exists");
   }
-  return usersModel.create(user);
+  await usersModel.create(user);
+  const token = await login(user.email, user.password);
+  return token;
 };
 
 const checkUser = async (email) => {

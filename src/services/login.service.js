@@ -19,4 +19,4 @@ const login = async (email, password) => {
   return token;
 };
 
-export default { login };
+export default login;
